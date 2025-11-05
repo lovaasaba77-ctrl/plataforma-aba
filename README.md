@@ -4,13 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Plataforma ABA</title>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800">
-  <!-- Navegación -->
-  <nav class="bg-blue-700 text-white p-4 flex justify-between items-center">
-    <h1 class="text-xl font-bold">Plataforma ABA</h1>
+
+  <!-- Barra de navegación -->
+  <nav class="bg-blue-700 text-white p-4 flex justify-between items-center shadow">
+    <h1 class="text-2xl font-bold">Plataforma ABA</h1>
     <ul class="flex space-x-4">
       <li><a href="#inicio" class="hover:text-gray-300">Inicio</a></li>
       <li><a href="#evaluaciones" class="hover:text-gray-300">Evaluaciones</a></li>
@@ -53,8 +56,114 @@
   <section id="progreso" class="p-6 bg-white shadow rounded m-4">
     <h2 class="text-xl font-semibold mb-4">Progreso del Paciente</h2>
     <canvas id="graficoProgreso" width="400" height="200"></canvas>
+
+    <!-- Historial de Evaluaciones -->
+    <h3 class="text-lg font-semibold mt-6 mb-2">Historial de Evaluaciones</h3>
+    <table id="tablaHistorial" class="min-w-full border border-gray-300 rounded">
+      <thead class="bg-blue-100">
+        <tr>
+          <th class="border p-2">Fecha</th>
+          <th class="border p-2">Paciente</th>
+          <th class="border p-2">Categoría</th>
+          <th class="border p-2">Puntaje</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </section>
 
-  <script src="script.js"></script>
+  <!-- Script principal -->
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("evaluacionForm");
+    const graficoCanvas = document.getElementById("graficoProgreso");
+    const tablaHistorial = document.querySelector("#tablaHistorial tbody");
+    let grafico;
+
+    // Cargar datos guardados
+    const datosGuardados = JSON.parse(localStorage.getItem("evaluaciones")) || [];
+
+    // Función para actualizar tabla
+    function actualizarTabla() {
+      tablaHistorial.innerHTML = "";
+      datosGuardados.forEach(d => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td class="border p-2">${d.fecha}</td>
+          <td class="border p-2">${d.nombre}</td>
+          <td class="border p-2">${d.categoria}</td>
+          <td class="border p-2 text-center">${d.puntaje}</td>
+        `;
+        tablaHistorial.appendChild(fila);
+      });
+    }
+
+    // Función para actualizar gráfico
+    function actualizarGrafico() {
+      const categorias = ["Atención", "Comunicación", "Motricidad", "Social"];
+      const promedios = categorias.map(cat => {
+        const registros = datosGuardados.filter(d => d.categoria === cat);
+        if (registros.length === 0) return 0;
+        const suma = registros.reduce((acc, curr) => acc + curr.puntaje, 0);
+        return (suma / registros.length).toFixed(1);
+      });
+
+      if (grafico) grafico.destroy();
+
+      grafico = new Chart(graficoCanvas, {
+        type: "bar",
+        data: {
+          labels: categorias,
+          datasets: [{
+            label: "Promedio de Puntajes",
+            data: promedios,
+            borderWidth: 1,
+            backgroundColor: [
+              "rgba(59,130,246,0.7)",
+              "rgba(16,185,129,0.7)",
+              "rgba(245,158,11,0.7)",
+              "rgba(239,68,68,0.7)"
+            ]
+          }]
+        },
+        options: {
+          scales: { y: { beginAtZero: true, max: 10 } }
+        }
+      });
+    }
+
+    // Inicializar tabla y gráfico
+    actualizarTabla();
+    actualizarGrafico();
+
+    // Guardar nueva evaluación
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById("nombrePaciente").value.trim();
+      const categoria = document.getElementById("categoria").value;
+      const puntaje = parseFloat(document.getElementById("puntaje").value);
+
+      if (!nombre || isNaN(puntaje)) {
+        alert("Por favor completa todos los campos.");
+        return;
+      }
+
+      const nuevaEval = { 
+        nombre, 
+        categoria, 
+        puntaje, 
+        fecha: new Date().toLocaleDateString()
+      };
+
+      datosGuardados.push(nuevaEval);
+      localStorage.setItem("evaluaciones", JSON.stringify(datosGuardados));
+
+      form.reset();
+      actualizarGrafico();
+      actualizarTabla();
+      alert("✅ Evaluación guardada correctamente");
+    });
+  });
+  </script>
 </body>
 </html>
