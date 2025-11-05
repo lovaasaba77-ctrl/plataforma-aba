@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plataforma ABA</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- 🔐 LOGIN -->
+  <div id="login-container" class="login-container active">
+    <div class="login-box">
+      <h2>Iniciar Sesión</h2>
+      <label for="usuario">Usuario</label>
+      <input type="text" id="usuario" placeholder="Usuario" />
+      <label for="clave">Clave</label>
+      <input type="password" id="clave" placeholder="Contraseña" />
+      <button id="btnLogin">Entrar</button>
+      <p id="loginError" class="error"></p>
+    </div>
+  </div>
+
+  <!-- 🧩 CONTENIDO PRINCIPAL -->
+  <div id="main-content" class="hidden">
+    <header>
+      <h1>Plataforma ABA</h1>
+      <nav>
+        <ul>
+          <li><a href="#" class="active" data-section="info-cliente">Información</a></li>
+          <li><a href="#" data-section="evaluacion">Evaluación Conductual</a></li>
+          <li><a href="#" data-section="programas">Programas</a></li>
+          <li><a href="#" data-section="progreso">Progreso</a></li>
+          <li><a href="#" data-section="sesiones">Sesiones</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <!-- SECCIÓN INFORMACIÓN DEL CLIENTE -->
+      <section id="info-cliente" class="active">
+        <h2>Añadir Nuevo Cliente</h2>
+        <form id="clienteForm">
+          <h3>Información Básica</h3>
+          <label>Iniciales del Cliente*</label>
+          <input type="text" id="iniciales" required />
+          <label>ID de Cliente*</label>
+          <input type="text" id="idCliente" required />
+          <label>Idioma Principal</label>
+          <select id="idioma">
+            <option>Español</option>
+            <option>Inglés</option>
+          </select>
+          <label>Fecha de Nacimiento*</label>
+          <input type="date" id="fechaNac" required />
+          <p>Edad: <span id="edad"></span></p>
+
+          <h3>Información Familiar</h3>
+          <label>Padre/Tutor 1</label>
+          <input type="text" id="padre1" />
+          <label>Fecha Nacimiento Padre/Tutor</label>
+          <input type="date" id="fechaPadre" />
+          <p>Edad Padre/Tutor: <span id="edadPadre"></span></p>
+          <label>¿Con quién vive el cliente?</label>
+          <input type="text" id="convivencia" />
+
+          <button type="submit">Guardar Cliente</button>
+        </form>
+      </section>
+
+      <!-- SECCIÓN EVALUACIÓN -->
+      <section id="evaluacion">
+        <h2>Evaluación Conductual</h2>
+        <form id="evaluacionForm">
+          <label>Fecha</label>
+          <input type="date" id="fechaEvaluacion" />
+          <label>Tipo de Evaluación</label>
+          <input type="text" id="tipoEval" placeholder="Ej. MSWO, Paired Choice..." />
+          <label>Más Preferidos</label>
+          <input type="text" id="masPreferidos" />
+          <label>Menos Preferidos</label>
+          <input type="text" id="menosPreferidos" />
+          <button type="submit">Guardar Evaluación</button>
+        </form>
+      </section>
+
+      <!-- SECCIÓN PROGRAMAS -->
+      <section id="programas">
+        <h2>Programas de Adquisición</h2>
+        <form id="programaForm">
+          <label>Título del Programa</label>
+          <input type="text" id="tituloPrograma" />
+          <label>Dominio</label>
+          <input type="text" id="dominio" placeholder="Ej. Comunicación" />
+          <label>Objetivo</label>
+          <textarea id="objetivo"></textarea>
+          <button type="submit">Guardar Programa</button>
+        </form>
+      </section>
+
+      <!-- SECCIÓN PROGRESO -->
+      <section id="progreso">
+        <h2>Progreso del Cliente</h2>
+        <canvas id="progresoChart" width="400" height="200"></canvas>
+        <button id="actualizarGrafico">Actualizar Gráfico</button>
+      </section>
+
+      <!-- SECCIÓN SESIONES -->
+      <section id="sesiones">
+        <h2>Historial de Sesiones</h2>
+        <p>No hay sesiones registradas aún.</p>
+        <button id="nuevaSesion">Iniciar Nueva Sesión</button>
+      </section>
+    </main>
+
+    <footer>
+      <p>© 2025 Plataforma ABA | Desarrollada por Lovaas ABA</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
