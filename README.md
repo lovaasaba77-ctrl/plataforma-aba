@@ -7,135 +7,54 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-50 min-h-screen text-gray-800">
-
-  <!-- NAV -->
-  <nav class="bg-blue-600 text-white shadow-lg">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
-      <h1 class="text-xl font-bold">Plataforma ABA</h1>
-      <ul class="flex gap-6">
-        <li><a href="#inicio" class="hover:text-blue-200">Inicio</a></li>
-        <li><a href="#evaluaciones" class="hover:text-blue-200">Evaluaciones</a></li>
-        <li><a href="#progreso" class="hover:text-blue-200">Progreso</a></li>
-      </ul>
-    </div>
+<body class="bg-gray-100 text-gray-800">
+  <!-- Navegación -->
+  <nav class="bg-blue-700 text-white p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold">Plataforma ABA</h1>
+    <ul class="flex space-x-4">
+      <li><a href="#inicio" class="hover:text-gray-300">Inicio</a></li>
+      <li><a href="#evaluaciones" class="hover:text-gray-300">Evaluaciones</a></li>
+      <li><a href="#progreso" class="hover:text-gray-300">Progreso</a></li>
+    </ul>
   </nav>
 
-  <!-- INICIO -->
-  <section id="inicio" class="max-w-4xl mx-auto mt-8 text-center">
-    <h2 class="text-2xl font-semibold mb-2">Bienvenido a la Plataforma ABA</h2>
-    <p class="text-gray-600">Registra evaluaciones funcionales y visualiza el progreso terapéutico.</p>
+  <!-- Sección Inicio -->
+  <section id="inicio" class="p-6">
+    <h2 class="text-2xl font-bold mb-2">Bienvenido a la Plataforma ABA</h2>
+    <p>Desde aquí podrás registrar observaciones, evaluar avances y visualizar el progreso de tus pacientes.</p>
   </section>
 
-  <!-- EVALUACIONES -->
-  <section id="evaluaciones" class="max-w-3xl mx-auto mt-10 bg-white p-6 rounded-xl shadow">
-    <h3 class="text-xl font-bold mb-4 text-blue-700">Registrar Evaluación Funcional</h3>
-
-    <form id="form-evaluacion" class="space-y-4">
+  <!-- Sección Evaluaciones -->
+  <section id="evaluaciones" class="p-6 bg-white shadow rounded m-4">
+    <h2 class="text-xl font-semibold mb-4">Registrar Evaluación</h2>
+    <form id="evaluacionForm" class="space-y-4">
       <div>
-        <label class="block font-semibold">Fecha</label>
-        <input type="date" id="fecha" class="border p-2 rounded w-full" required>
+        <label class="block mb-1 font-medium">Nombre del Paciente</label>
+        <input type="text" id="nombrePaciente" class="w-full border rounded p-2" required />
       </div>
-
       <div>
-        <label class="block font-semibold">Tipo de Evaluación</label>
-        <select id="tipo" class="border p-2 rounded w-full">
-          <option value="Inicial">Inicial</option>
-          <option value="Seguimiento">Seguimiento</option>
-          <option value="Final">Final</option>
+        <label class="block mb-1 font-medium">Categoría</label>
+        <select id="categoria" class="w-full border rounded p-2">
+          <option value="Atención">Atención</option>
+          <option value="Comunicación">Comunicación</option>
+          <option value="Motricidad">Motricidad</option>
+          <option value="Social">Social</option>
         </select>
       </div>
-
       <div>
-        <label class="block font-semibold mb-2">Hipótesis Conductuales</label>
-        <div class="space-y-1">
-          <label><input type="checkbox" name="hipotesis" value="Escape"> Escape</label><br>
-          <label><input type="checkbox" name="hipotesis" value="Atención"> Atención</label><br>
-          <label><input type="checkbox" name="hipotesis" value="Acceso a objetos"> Acceso a objetos</label><br>
-          <label><input type="checkbox" name="hipotesis" value="Automática"> Automática</label>
-        </div>
+        <label class="block mb-1 font-medium">Puntaje (0 - 10)</label>
+        <input type="number" id="puntaje" min="0" max="10" class="w-full border rounded p-2" required />
       </div>
-
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        Guardar Evaluación
-      </button>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Guardar Evaluación</button>
     </form>
-
-    <div id="lista-evaluaciones" class="mt-6"></div>
   </section>
 
-  <!-- PROGRESO -->
-  <section id="progreso" class="max-w-3xl mx-auto mt-10 bg-white p-6 rounded-xl shadow">
-    <h3 class="text-xl font-bold mb-4 text-blue-700">Gráfico de Progreso</h3>
-    <canvas id="grafico"></canvas>
+  <!-- Sección Progreso -->
+  <section id="progreso" class="p-6 bg-white shadow rounded m-4">
+    <h2 class="text-xl font-semibold mb-4">Progreso del Paciente</h2>
+    <canvas id="graficoProgreso" width="400" height="200"></canvas>
   </section>
 
   <script src="script.js"></script>
 </body>
 </html>
-// Guardar evaluación
-const form = document.getElementById("form-evaluacion");
-const lista = document.getElementById("lista-evaluaciones");
-const ctx = document.getElementById("grafico");
-
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-
-  const fecha = document.getElementById("fecha").value;
-  const tipo = document.getElementById("tipo").value;
-  const hipotesis = Array.from(document.querySelectorAll("input[name='hipotesis']:checked"))
-    .map(h => h.value);
-
-  const evaluacion = { fecha, tipo, hipotesis };
-  let datos = JSON.parse(localStorage.getItem("evaluaciones")) || [];
-  datos.push(evaluacion);
-  localStorage.setItem("evaluaciones", JSON.stringify(datos));
-
-  mostrarEvaluaciones();
-  actualizarGrafico();
-  form.reset();
-});
-
-function mostrarEvaluaciones() {
-  let datos = JSON.parse(localStorage.getItem("evaluaciones")) || [];
-  lista.innerHTML = "";
-  datos.forEach((ev) => {
-    const div = document.createElement("div");
-    div.className = "border-b py-2";
-    div.innerHTML = `
-      <p><b>${ev.fecha}</b> - ${ev.tipo}</p>
-      <p class="text-gray-600 text-sm">Hipótesis: ${ev.hipotesis.join(", ")}</p>
-    `;
-    lista.appendChild(div);
-  });
-}
-
-function actualizarGrafico() {
-  let datos = JSON.parse(localStorage.getItem("evaluaciones")) || [];
-  const conteo = { "Escape": 0, "Atención": 0, "Acceso a objetos": 0, "Automática": 0 };
-
-  datos.forEach(ev => {
-    ev.hipotesis.forEach(h => {
-      if (conteo[h] !== undefined) conteo[h]++;
-    });
-  });
-
-  const etiquetas = Object.keys(conteo);
-  const valores = Object.values(conteo);
-
-  new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: etiquetas,
-      datasets: [{
-        label: "Frecuencia de Hipótesis",
-        data: valores
-      }]
-    },
-    options: { responsive: true }
-  });
-}
-
-mostrarEvaluaciones();
-actualizarGrafico();
-/* Archivo base de estilos - puedes personalizar más adelante */
